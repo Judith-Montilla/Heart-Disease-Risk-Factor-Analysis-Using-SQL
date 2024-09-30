@@ -1,0 +1,90 @@
+-- Heart Disease Risk Factor Analysis Using SQL
+
+-- Introduction:
+-- This SQL analysis aims to explore risk factors associated with heart disease 
+-- using the Heart Disease Cleveland dataset. The dataset includes patient demographics 
+-- and various health metrics, allowing us to perform a comprehensive analysis to identify 
+-- key indicators of heart disease. The insights derived from this analysis can help 
+-- healthcare providers make informed decisions about patient care and resource allocation.
+
+-- 1. Check the basic structure of the dataset
+SELECT *
+FROM `case-study-4-437215.case_study_4.Heart Disease Cleveland UCI`
+LIMIT 10;
+
+-- 2. Count the number of patients with and without heart disease
+SELECT 
+    condition, 
+    COUNT(*) AS patient_count
+FROM `case-study-4-437215.case_study_4.Heart Disease Cleveland UCI`
+GROUP BY condition;
+
+-- 3. Analyze Key Health Metrics for Patients With and Without Heart Disease
+SELECT 
+    condition,
+    AVG(age) AS avg_age,
+    AVG(trestbps) AS avg_resting_bp,
+    AVG(chol) AS avg_cholesterol,
+    AVG(thalach) AS avg_max_heart_rate,
+    AVG(oldpeak) AS avg_st_depression
+FROM `case-study-4-437215.case_study_4.Heart Disease Cleveland UCI`
+GROUP BY condition;
+
+-- 4. Find the Distribution of Chest Pain Types and Heart Disease
+SELECT 
+    cp AS chest_pain_type, 
+    condition,
+    COUNT(*) AS patient_count
+FROM `case-study-4-437215.case_study_4.Heart Disease Cleveland UCI`
+GROUP BY cp, condition
+ORDER BY chest_pain_type, condition;
+
+-- 5. Compare Key Risk Factors (e.g., Cholesterol and Blood Pressure) for Heart Disease
+SELECT 
+    condition,
+    AVG(chol) AS avg_cholesterol,
+    AVG(trestbps) AS avg_resting_bp,
+    AVG(thalach) AS avg_max_heart_rate,
+    AVG(oldpeak) AS avg_st_depression
+FROM `case-study-4-437215.case_study_4.Heart Disease Cleveland UCI`
+GROUP BY condition
+HAVING AVG(chol) > 200 OR AVG(trestbps) > 130;
+
+-- 6. Rank Patients Based on Risk Factors
+SELECT 
+    age, 
+    sex,
+    chol AS cholesterol,
+    trestbps AS resting_bp,
+    thalach AS max_heart_rate,
+    oldpeak AS st_depression,
+    condition,
+    RANK() OVER (ORDER BY chol DESC, trestbps DESC, oldpeak DESC) AS risk_rank
+FROM `case-study-4-437215.case_study_4.Heart Disease Cleveland UCI`
+WHERE condition = 1;
+
+-- 7. Summarize Demographic and Health Risk Factors
+SELECT 
+    sex, 
+    AVG(age) AS avg_age, 
+    AVG(chol) AS avg_cholesterol, 
+    AVG(trestbps) AS avg_resting_bp,
+    AVG(thalach) AS avg_max_heart_rate,
+    AVG(oldpeak) AS avg_st_depression,
+    COUNT(*) AS patient_count
+FROM `case-study-4-437215.case_study_4.Heart Disease Cleveland UCI`
+GROUP BY sex
+ORDER BY avg_cholesterol DESC;
+
+-- Conclusion:
+-- The analysis identified significant risk factors associated with heart disease, 
+-- highlighting the importance of cholesterol levels, blood pressure, and other health metrics 
+-- in predicting heart disease. These insights can guide healthcare professionals in 
+-- developing targeted interventions for patients at higher risk.
+
+-- Future Work Recommendations:
+-- - Expand the dataset to include additional patient metrics, such as comorbidities or previous hospitalization history, 
+--   to improve the accuracy of heart disease predictions.
+-- - Conduct scenario analyses to simulate various patient influx situations and assess how resource allocation strategies perform.
+-- - Integrate this model with Electronic Health Records (EHR) systems for real-time patient monitoring and intervention.
+-- - Explore more advanced machine learning models for predicting heart disease risk based on a wider array of health metrics.
